@@ -1,0 +1,17 @@
+{
+    "DB_TYPE": "XC",
+    "N_POS": 200,
+    "N_NEG_PER_POS": 100,
+    "RESTRICTION": {
+        "arch": [
+            "x"
+        ],
+        "bit": [
+            64
+        ]
+    },
+    "SEED": 1,
+    "SIZE_RANGE": [3676, 1000000],
+    "SIZE_RANGE_FOR_QUERY_ONLY": true, 
+    "DATASET_INFO_CSV": "dbs/Dataset-1/testing_Dataset-1_with_size.csv"
+}

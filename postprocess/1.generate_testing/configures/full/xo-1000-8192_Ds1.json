@@ -1,0 +1,6 @@
+{
+    "DB_TYPE": "XO",
+    "N_POS": 1000, 
+    "N_NEG_PER_POS": 8192,
+    "DATASET_INFO_CSV": "dbs/Dataset-1/testing_Dataset-1_with_size.csv"
+}

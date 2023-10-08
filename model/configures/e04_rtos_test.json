@@ -1,0 +1,70 @@
+{
+    "common": {
+        "args": {
+            "dataset": "rtos",
+            "test_outdir": "last",
+            "featuresdir": "inputs/pcode_raw/pcode_sog",
+            "feature_json_name": "graph_func_dict_opc_55.0.json"
+        }
+    },
+    "sog_0": {
+        "is_testing": true,
+        "args": {
+            "outputdir": "outputs/experiments/hermes_sim/0"
+        }
+    },
+    "sog_1": {
+        "is_testing": true,
+        "args": {
+            "outputdir": "outputs/experiments/hermes_sim/1"
+        }
+    },
+    "sog_2": {
+        "is_testing": true,
+        "args": {
+            "outputdir": "outputs/experiments/hermes_sim/2"
+        }
+    },
+    "sog_3": {
+        "is_testing": true,
+        "args": {
+            "outputdir": "outputs/experiments/hermes_sim/3"
+        }
+    },
+    "sog_4": {
+        "is_testing": true,
+        "args": {
+            "outputdir": "outputs/experiments/hermes_sim/4"
+        }
+    },
+    "sog_5": {
+        "is_testing": true,
+        "args": {
+            "outputdir": "outputs/experiments/hermes_sim/5"
+        }
+    },
+    "sog_6": {
+        "is_testing": true,
+        "args": {
+            "outputdir": "outputs/experiments/hermes_sim/6"
+        }
+    },
+    "sog_7": {
+        "is_testing": true,
+        "args": {
+            "outputdir": "outputs/experiments/hermes_sim/7"
+        }
+    },
+    "sog_8": {
+        "is_testing": true,
+        "args": {
+            "outputdir": "outputs/experiments/hermes_sim/8"
+        }
+    },
+    "sog_9": {
+        "is_testing": true,
+        "args": {
+            "outputdir": "outputs/experiments/hermes_sim/9"
+        }
+    }
+}

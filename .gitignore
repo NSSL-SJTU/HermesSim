@@ -1,0 +1,7 @@
+/binaries
+/dbs
+/inputs
+/outputs
+/temp
+__pycache__
+__cache__
