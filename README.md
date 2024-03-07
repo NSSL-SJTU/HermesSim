@@ -5,6 +5,8 @@ This repository contains the code and the dataset for our USENIX Security '24 pa
 > Haojie He, Xingwei Lin, Ziang Weng,
 Ruijie Zhao, Shuitao Gan, Libo Chen, Yuede Ji, Jiashui Wang, and Zhi Xue. *Code is not Natural Language: Unlock the Power of Semantics-Oriented Graph Representation for Binary Code Similarity Detection*. USENIX Security '24.
 
+The paper is available at this [link](https://www.usenix.org/conference/usenixsecurity24/presentation/he).
+
 ## Artifacts
 
 Description of folders: 
@@ -14,12 +16,12 @@ Description of folders:
 - model: contains the neural network model and related experiments configures. 
 - postprocess: contains scripts for testing pairs generation, fast evaluation and visualization. 
 - binaries: contains raw binaries of the datasets. 
-    - For Dataset-1 published by [the previous work](https://www.usenix.org/system/files/sec22-marcelli.pdf), please refer [Binaries](https://github.com/Cisco-Talos/binary_function_similarity/tree/main/Binaries). 
-    - Binaries of Dataset-RTOS are available at [here](#TODO). 
-- bin: binaries of external tools. Currently, only there is [gsat-1.0.jar](#TODO). 
-- dbs: contains description files and feature files (including the extracted graphs) of the datasets. Available at [here](#TODO). 
-- inputs: contains the inputs for the neural network models (the outputs of the preprocessing step). Available at [here](#TODO). 
-- outputs: contains the outputs of the neural network models (checkpoint files, inferred embeddings, log and configure files, and etc.) and the outputs of fast evaluation (`summary_*.csv` and `*_MRR_Recall_max.csv` files). Available at [here](#TODO). 
+    - For Dataset-1 published by [the previous work](https://www.usenix.org/system/files/sec22-marcelli.pdf), please refer to [Binaries](https://github.com/Cisco-Talos/binary_function_similarity/tree/main/Binaries). 
+    - Binaries of Dataset-RTOS are available at [here](https://zenodo.org/records/10369788/files/Dataset-RTOS-525.tar.xz?download=1). 
+- bin: binaries of external tools. The only external tool: [gsat-1.0.jar](https://github.com/sgfvamll/gsat/releases/tag/v1.0.0). 
+- dbs: contains description files and feature files (including the extracted graphs) of the datasets. Available at [here](https://zenodo.org/records/10369788/files/dbs.tar.xz?download=1). 
+- inputs: contains the inputs for the neural network models (the outputs of the preprocessing step). Available at [here](https://zenodo.org/records/10369788/files/inputs.tar.xz?download=1). 
+- outputs: contains the outputs of the neural network models (checkpoint files, inferred embeddings, log and configure files, and etc.) and the outputs of fast evaluation (`summary_*.csv` and `*_MRR_Recall_max.csv` files). Available at [here](https://zenodo.org/records/10369788/files/outputs.tar.xz?download=1). 
 
 
 ## How to reproduce the experiments
@@ -28,7 +30,7 @@ Description of folders:
 
 - Related folders: lifting, dbs, bin, binaries
 
-> If you are only interested in running experiments on the two datasets used in the paper, you can skip this step since all the results you need are in the `dbs' folder.
+> If you are only interested in running experiments on the two datasets used in the paper, you can skip this step since we have provide all the intermediate results you need in the `dbs' folder.
 
 First, constuct CFG summary files:
 ```sh
@@ -40,7 +42,7 @@ python lifting/dataset_summary.py \
 
 This script takes the following files as inputs: 
 1. a dataset description csv file that contains the indices of all functions in the dataset; 
-2. and a folder of files that contain the CFGs of functions;
+2. and a folder of files that contain the CFGs of functions (refer to [DBs](https://github.com/Cisco-Talos/binary_function_similarity/tree/main/DBs) to download these files for Dataset-1);
 
 You can refer [binary_function_similarity](https://github.com/Cisco-Talos/binary_function_similarity) to figure out how to generate these artifacts for customized datasets. 
 
@@ -54,6 +56,16 @@ python lifting/pcode_lifter.py \
 ```
 
 This script takes the generated CFG summary files and binaries as input. It will invoke the [GSAT](https://github.com/sgfvamll/gsat) executable to conduct the major work. 
+
+To lift the RTOS dataset, use the following command:
+```sh
+python lifting/pcode_lifter.py \
+    --cfg_summary ./dbs/Dataset-RTOS-525/cfg_summary/testing \
+    --output_dir ./dbs/Dataset-RTOS-525/features/testing/pcode_raw_testing \
+    --graph_type ALL \
+    --verbose 1 \
+    --firmware_info ./dbs/Dataset-RTOS-525/info.csv
+```
 
 ### 2. Preprocess inputs
 
@@ -122,8 +134,6 @@ Please see `postprocess/3.pp_results` for details.
 - `postprocess/3.pp_results/print_rtos_results.py`: Results of the real-world vulnerability search experiments. 
 - `postprocess/3.pp_results/appendix-c.ipynb`: Results in the Appendix-C. 
 
-
-<!-- ## How to cite our work -->
 
 ## Feedback
 

@@ -31,8 +31,6 @@ def collect_for_one_task(pos_pair_csv, in_dir):
     sim_df_csv = basename(pos_pair_csv)[:-4] + "_sim.csv"
     ds1_pkl_fn, x64_pkl_fn = "testing_Dataset-1.pkl", "x64_testing.pkl"
     for root, _, filenames in os.walk(in_dir):
-        if 'representations' in root or 'aggregators' in root:
-            continue
         result_csv_fp = join(root, result_csv)
         if os.path.exists(result_csv_fp):
             result_dfs.append(pd.read_csv(result_csv_fp))

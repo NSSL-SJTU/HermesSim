@@ -19,6 +19,7 @@ import sys
 import os
 import subprocess
 import json
+import pandas as pd
 from os.path import basename, join
 from multiprocessing import Pool
 
@@ -40,18 +41,20 @@ AR_OBJ_MAP = {
 def idb_path_to_binary_path(idb_path):
     assert idb_path[-4:] == ".i64" or idb_path[-4:] == ".idb"
     assert idb_path[:5] == "IDBs/"
-    return "Binaries" + idb_path[4:-4]
+    return "binaries" + idb_path[4:-4]
 
 
 def extract_time(out: str):
     sig_s = "Time for extraction: "
     sig_e = "secs."
-    out = out[out.find(sig_s) + len(sig_s):]
-    out = out[:out.find(sig_e)]
+    out = out[out.find(sig_s) + len(sig_s) :]
+    out = out[: out.find(sig_e)]
     return float(out)
 
 
-def do_one_extractor(cfg_summary_fp, graph_type, verbose, output_dir):
+def do_one_extractor(
+    cfg_summary_fp, graph_type, verbose, output_dir, firmware_info=None
+):
     with open(cfg_summary_fp, "r") as f:
         idb_fp = list(json.load(f).keys())[0]
     bin_fp = idb_path_to_binary_path(idb_fp)
@@ -59,8 +62,10 @@ def do_one_extractor(cfg_summary_fp, graph_type, verbose, output_dir):
     output_name = bin_base + ACFG_POSTFIX
     output_fp = os.path.join(output_dir, output_name)
 
-    ar_mode = bin_fp.endswith(".a")
-    if ar_mode:
+    if firmware_info is not None:
+        language_id, load_addr = firmware_info
+        bin_selector = f"-m binary -l {language_id} -b {load_addr}"
+    elif bin_fp.endswith(".a"):
         obj_name = None
         for name, obj in AR_OBJ_MAP.items():
             if bin_fp.endswith(name):
@@ -78,8 +83,7 @@ def do_one_extractor(cfg_summary_fp, graph_type, verbose, output_dir):
     cmd = f"java {enable_assert} {heap_config} -jar {GSAT_BIN_PATH} pcode-extractor-v2 {bin_selector} \
         -f {bin_fp} -c {cfg_summary_fp} -of {graph_type} -v {verbose}\
         {prefer_raw} -o {output_fp}"
-    proc = subprocess.Popen(cmd, shell=True, text=True,
-                            stdout=subprocess.PIPE)
+    proc = subprocess.Popen(cmd, shell=True, text=True, stdout=subprocess.PIPE)
     out, _ = proc.communicate()
     code = proc.returncode
     if (code != 0) or (not os.path.exists(output_fp)):
@@ -95,31 +99,64 @@ def do_one_extractor_wrap(args):
     return do_one_extractor(*args)
 
 
+def get_firmware_info(info_csv):
+    info = pd.read_csv(info_csv)
+    info_map = {}
+    for idx, r in info.iterrows():
+        fn, arch_str, load_addr = r["file_name"], r["arch_str"], r["load_addr"]
+        info_map[fn] = (arch_str, load_addr)
+    return info_map
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        prog='Pcode-Lifter',
-        description='A helper script to lift binary functions into various Pcode-based representations, including SOG, ISCG, TSCG, and ACFG. ',
-        formatter_class=argparse.RawDescriptionHelpFormatter)
+        prog="Pcode-Lifter",
+        description="A helper script to lift binary functions into various Pcode-based representations, including SOG, ISCG, TSCG, and ACFG. ",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
 
-    parser.add_argument("--cfg_summary", default="./dbs/Dataset-1/cfg_summary/testing",
-                        help="Path to the input summary files, which is needed by the lifter. ")
+    parser.add_argument(
+        "--cfg_summary",
+        default="./dbs/Dataset-1/cfg_summary/testing",
+        help="Path to the input summary files, which is needed by the lifter. ",
+    )
 
-    parser.add_argument("--output_dir", default="./dbs/Dataset-1/features/testing/pcode_raw_Dataset-1_testing",
-                        help="Path to the output feature directory. ")
+    parser.add_argument(
+        "--output_dir",
+        default="./dbs/Dataset-1/features/testing/pcode_raw_Dataset-1_testing",
+        help="Path to the output feature directory. ",
+    )
 
-    parser.add_argument("--graph_type", default="ALL", choices=['ALL', 'SOG', 'ACFG'],
-                        help="The target type of graph to lift into. ALL is for SOG, ISCG, TSCG, and ACFG. ")
+    parser.add_argument(
+        "--graph_type",
+        default="ALL",
+        choices=["ALL", "SOG", "ACFG"],
+        help="The target type of graph to lift into. ALL is for SOG, ISCG, TSCG, and ACFG. ",
+    )
 
-    parser.add_argument("--verbose", default="1", choices=['0', '1'],
-                        help="Whether the output files should contain verbose info of instructions/nodes. ")
+    parser.add_argument(
+        "--verbose",
+        default="1",
+        choices=["0", "1"],
+        help="Whether the output files should contain verbose info of instructions/nodes. ",
+    )
 
-    parser.add_argument("--nproc", default="1", 
-                        help="Number of processes to use. ")
+    parser.add_argument("--nproc", default="1", help="Number of processes to use. ")
+
+    parser.add_argument(
+        "--firmware_info", default=None, help="Number of processes to use. "
+    )
 
     args = parser.parse_args()
 
-    cfg_summary_dir, output_dir, graph_type, verbose = (getattr(
-        args, arg) for arg in ['cfg_summary', 'output_dir', 'graph_type', 'verbose'])
+    cfg_summary_dir, output_dir, graph_type, verbose = (
+        getattr(args, arg)
+        for arg in ["cfg_summary", "output_dir", "graph_type", "verbose"]
+    )
+
+    firmware_info = None
+    if args.firmware_info is not None:
+        firmware_info = get_firmware_info(args.firmware_info)
 
     NPROC = int(args.nproc)
 
@@ -133,10 +170,13 @@ if __name__ == "__main__":
     for fn in os.listdir(output_dir):
         if not fn.endswith(ACFG_POSTFIX):
             continue
-        fn = fn[:-len(ACFG_POSTFIX)]
+        fn = fn[: -len(ACFG_POSTFIX)]
+        if firmware_info is not None:
+            # Handle filename mismatch between these two datasets. 
+            fn = "-".join(fn.split("-")[1:])
         one = 0
         for idx, summary_fn in enumerate(summary_files):
-            if summary_fn[:-len(CFG_SUMMARY_POSTFIX)] == fn:
+            if summary_fn[: -len(CFG_SUMMARY_POSTFIX)] == fn:
                 processed.append(idx)
                 one += 1
                 if one > 1:
@@ -150,10 +190,21 @@ if __name__ == "__main__":
     p = Pool(NPROC)
     failed_list = []
     time_cost = []
-    for code, info in p.imap_unordered(do_one_extractor_wrap, [
-        (join(cfg_summary_dir, summary_fn), graph_type, verbose, output_dir)
-        for summary_fn in summary_files
-    ]):
+    for code, info in p.imap_unordered(
+        do_one_extractor_wrap,
+        [
+            (
+                join(cfg_summary_dir, summary_fn),
+                graph_type,
+                verbose,
+                output_dir,
+                firmware_info[summary_fn[: -len(CFG_SUMMARY_POSTFIX)]]
+                if firmware_info is not None
+                else None,
+            )
+            for summary_fn in summary_files
+        ],
+    ):
         if code is not None:
             bin_fp = info
             failed_list.append(bin_fp)
