@@ -141,6 +141,7 @@ if __name__ == "__main__":
         help="Whether the output files should contain verbose info of instructions/nodes. ",
     )
 
+    # For safety, use only one process by default to avoid exhausting cpu / memory resources.
     parser.add_argument("--nproc", default="1", help="Number of processes to use. ")
 
     parser.add_argument(

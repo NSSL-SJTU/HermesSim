@@ -37,17 +37,6 @@
             "run_test": ["last"]
         }
     },
-    "sog": {
-        "encoder": {
-            "embed": {
-                "n_node_attr": 461
-            }
-        }, 
-        "args": {
-            "feature_json_name": "graph_func_dict_opc_55.0.json", 
-            "featuresdir": "./inputs/pcode_raw/pcode_sog"
-        }
-    },
     "tscg": {
         "encoder": {
             "embed": {

@@ -18,9 +18,6 @@ import math
 import pandas as pd
 from os.path import join, basename
 
-PROJ_ROOT = "../.."
-EXPERIMENT_ROOT = join(PROJ_ROOT, "outputs/experiments")
-
 ## Utils
 
 id_map = {
@@ -95,7 +92,7 @@ def taskname_from_summary_fn(fn):
             size_ranges_desc += '-query-only'
     return ("x64-" if '-arch_x-bit_64' in fn else "") + fn[8:10].upper() + size_ranges_desc
 
-def get_groupped_dataframe(summary_fn, root=EXPERIMENT_ROOT):
+def get_groupped_dataframe(summary_fn, root):
     df = pd.read_csv(join(root, summary_fn), index_col=0)
     df = df.groupby("model_name").mean()
     df.index = [map_name(name) for name in df.index]

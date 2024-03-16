@@ -1,0 +1,51 @@
+{
+    "common": {
+        "ggnn_net": {
+            "output_mode": 0
+        },
+        "encoder": {
+            "name": "embed", 
+            "embed": {
+                "n_node_attr": 290, 
+                "n_pos_enc": 8
+            }
+        }, 
+        "aggr": {
+            "name": "msoftv2", 
+            "msoftv2": {
+                "num_querys": 6, 
+                "hidden_channels": 64, 
+                "n_node_trans": 1, 
+                "n_agg_trans": 1,  
+                "q_scale": 1.0
+            }
+        }, 
+        "used_subgraphs": [1,2,3], 
+        "batch_size": 100, 
+        "training": {
+            "mode": "batch_pair", 
+            "loss": "cosine", 
+            "gama": 1e+7, 
+            "margin": 0.10, 
+            "batch_size": 80, 
+            "n_sim_funcs": 2, 
+            "print_after": 1250, 
+            "max_num_nodes": 180000, 
+            "max_num_edges": 360000
+        }, 
+        "tunning": {
+            "run_test": []
+        }
+    },
+    "sog": {
+        "encoder": {
+            "embed": {
+                "n_node_attr": 461
+            }
+        }, 
+        "args": {
+            "feature_json_name": "graph_func_dict_opc_55.0.json", 
+            "featuresdir": "./inputs/pcode_raw/pcode_sog"
+        }
+    }
+}

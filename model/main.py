@@ -155,7 +155,7 @@ def main():
                         help="Device used. ")
 
     parser.add_argument('--num_epochs', type=int,
-                        required=False, default=2,
+                        required=False, default=20,
                         help='Number of training epochs')
 
     parser.add_argument('--dataset', required=True,

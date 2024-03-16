@@ -46,13 +46,14 @@ This script takes the following files as inputs:
 
 You can refer [binary_function_similarity](https://github.com/Cisco-Talos/binary_function_similarity) to figure out how to generate these artifacts for customized datasets. 
 
-Then, lifting binaries using:
+Then, lifting binaries using (please manually modify the `nproc` argument to meet your cpu and memory restriction):
 ```sh
 python lifting/pcode_lifter.py \
     --cfg_summary ./dbs/Dataset-1/cfg_summary/testing \
     --output_dir ./dbs/Dataset-1/features/testing/pcode_raw_Dataset-1_testing \
     --graph_type ALL \
-    --verbose 1
+    --verbose 1 \
+    --nproc 32
 ```
 
 This script takes the generated CFG summary files and binaries as input. It will invoke the [GSAT](https://github.com/sgfvamll/gsat) executable to conduct the major work. 
@@ -77,12 +78,12 @@ See `preprocess/preprocess_all.sh` for examples.
 
 ### 3. Model Training / Inferring
 
-- Related folders: model, inputs, outputs
+- Related folders: model, dbs, inputs, outputs
 
 The following example will run the representation part of our ablation study, including both training and inferring. The inferring step will output the embeddings of all functions in the testing dataset. More configure files can be found in `model/configures`. 
 
 ```sh
-CUDA_VISIBLE_DEVICES=1 python model/main.py \
+python model/main.py \
     --inputdir dbs \
     --config ./model/configures/e02_repr.json \
     --dataset=one
