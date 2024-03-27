@@ -26,6 +26,17 @@ Description of folders:
 
 ## How to reproduce the experiments
 
+### 0. Setup
+
+Prepare Python environment: 
+``` 
+conda create -n hermessim python=3.10
+conda activate hermessim
+pip install -r ./requirements.txt \
+    --extra-index-url https://download.pytorch.org/whl/cu116 \
+    -f https://data.pyg.org/whl/torch-1.13.1+cu116.html
+```
+
 ### 1. Lifting binary functions Pcode based representations. 
 
 - Related folders: lifting, dbs, bin, binaries
