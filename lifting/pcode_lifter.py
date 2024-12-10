@@ -78,7 +78,7 @@ def do_one_extractor(
         bin_selector = "-m elf"
     enable_assert = "-ea"
     # enable_assert = ""
-    prefer_raw = "-opt 1"
+    prefer_raw = "-opt 0"
     heap_config = "-Xmx16G -XX:+UseCompressedOops"
     cmd = f"java {enable_assert} {heap_config} -jar {GSAT_BIN_PATH} pcode-extractor-v2 {bin_selector} \
         -f {bin_fp} -c {cfg_summary_fp} -of {graph_type} -v {verbose}\
